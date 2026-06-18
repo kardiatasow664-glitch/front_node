@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { HelpCircle, Send } from "lucide-react";
 
 const QuestionForm = () => {
   const [formData, setFormData] = useState({
@@ -29,32 +30,46 @@ const QuestionForm = () => {
   };
 
   return (
-    <div className="min-h-[90vh] bg-gray-100 flex items-center justify-center p-5">
-      <div className="w-full max-w-2xl bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Poser une question
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-3xl bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-white p-8 md:p-10">
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-4">
+            <HelpCircle size={40} className="text-white" />
+          </div>
+
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Poser une Question
+          </h1>
+
+          <p className="text-slate-500 mt-2">
+            Décrivez votre problème afin que la communauté puisse vous aider.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+
           {/* Titre */}
           <div>
-            <label className="block mb-2 font-semibold">
+            <label className="block text-slate-700 font-semibold mb-2">
               Titre de la question
             </label>
+
             <input
               type="text"
               name="titre"
               value={formData.titre}
               onChange={handleChange}
               placeholder="Ex : Comment utiliser React Router ?"
-              className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
               required
             />
           </div>
 
           {/* Catégorie */}
           <div>
-            <label className="block mb-2 font-semibold">
+            <label className="block text-slate-700 font-semibold mb-2">
               Catégorie
             </label>
 
@@ -62,7 +77,7 @@ const QuestionForm = () => {
               name="categorie"
               value={formData.categorie}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
               required
             >
               <option value="">Choisir une catégorie</option>
@@ -76,7 +91,7 @@ const QuestionForm = () => {
 
           {/* Description */}
           <div>
-            <label className="block mb-2 font-semibold">
+            <label className="block text-slate-700 font-semibold mb-2">
               Description détaillée
             </label>
 
@@ -84,9 +99,9 @@ const QuestionForm = () => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows="6"
+              rows="7"
               placeholder="Décrivez votre problème ou votre question..."
-              className="w-full border border-gray-300 rounded-lg p-3 outline-none resize-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none resize-none transition-all"
               required
             />
           </div>
@@ -94,8 +109,9 @@ const QuestionForm = () => {
           {/* Bouton */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
+            <Send size={20} />
             Envoyer la question
           </button>
         </form>
