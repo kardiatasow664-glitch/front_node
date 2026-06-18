@@ -1,96 +1,105 @@
-import React from 'react'
-import QuestionCard from './QuestionCard'
+import React from "react";
+import QuestionCard from "./QuestionCard";
 
 const Questions = () => {
   const questions = [
     {
       id: 1,
-      titre: "Comment utiliser useEffect dans React pour récupérer des données ?",
-      description: "Je débute avec React et je souhaite récupérer des données depuis une API avec useEffect.",
+      titre: "Comment utiliser useEffect dans React ?",
+      description: "Je débute avec React et je souhaite récupérer des données.",
       heure: "09:15",
       auteur: "Aminata Ndiaye",
+      categorie: "React",
     },
     {
       id: 2,
       titre: "Pourquoi mon serveur Express retourne une erreur 404 ?",
-      description: "J'ai créé une route GET /users mais lorsque je fais une requête depuis Postman, je reçois une erreur 404.",
+      description: "J'ai créé une route GET /users.",
       heure: "10:30",
       auteur: "Mamadou Diallo",
+      categorie: "Node.js",
     },
     {
       id: 3,
-      titre: "Comment connecter Spring Boot à une base de données MySQL ?",
-      description: "Mon application Spring Boot ne parvient pas à se connecter à MySQL.",
+      titre: "Comment connecter Spring Boot à MySQL ?",
+      description: "Mon application ne se connecte pas.",
       heure: "11:45",
       auteur: "Fatou Sow",
+      categorie: "Java",
     },
-    {
-      id: 4,
-      titre: "Quelle est la différence entre let, const et var en JavaScript ?",
-      description: "Je vois souvent ces trois mots-clés dans les exemples JavaScript.",
-      heure: "14:20",
-      auteur: "Cheikh Ba",
-    },
-    {
-      id: 5,
-      titre: "Comment créer une authentification JWT avec Node.js ?",
-      description: "Je développe une API avec Express et je souhaite sécuriser mes routes avec JWT.",
-      heure: "16:05",
-      auteur: "Khadija Fall",
-    },
-  ]
+  ];
 
   return (
-    <section className="w-full px-4 sm:px-6 lg:px-8 py-10 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
 
-      {/* ── En-tête section ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-1">
-            Questions récentes
+      {/* Header */}
+      <div className="py-12">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+
+          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+            Forum de Questions
           </h1>
-          <p className="text-slate-500 text-sm">
-            {questions.length} questions posées par la communauté
+
+          <p className="mt-4 text-lg text-gray-600">
+            Partagez vos connaissances et trouvez des réponses à vos problèmes.
           </p>
+
+        </div>
+      </div>
+
+      {/* Catégories */}
+      <div className="max-w-6xl mx-auto px-6">
+
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+
+          <span className="px-5 py-2 bg-indigo-600 text-white rounded-full shadow">
+            Toutes
+          </span>
+
+          <span className="px-5 py-2 bg-blue-100 text-blue-700 rounded-full">
+            React
+          </span>
+
+          <span className="px-5 py-2 bg-green-100 text-green-700 rounded-full">
+            Node.js
+          </span>
+
+          <span className="px-5 py-2 bg-orange-100 text-orange-700 rounded-full">
+            Java
+          </span>
+
+          <span className="px-5 py-2 bg-yellow-100 text-yellow-700 rounded-full">
+            JavaScript
+          </span>
+
         </div>
 
-        {/* Filtre / tri */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 font-medium">Trier par :</span>
-          <select className="text-sm text-slate-600 bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 cursor-pointer transition-all">
-            <option>Les plus récentes</option>
-            <option>Les plus populaires</option>
+        {/* Informations */}
+        <div className="flex justify-between items-center mb-6">
+          <p className="font-medium text-indigo-700">
+            📚 {questions.length} questions disponibles
+          </p>
+
+          <select className="border border-indigo-200 rounded-xl px-4 py-2 bg-white">
+            <option>Plus récentes</option>
+            <option>Plus populaires</option>
             <option>Sans réponse</option>
           </select>
         </div>
-      </div>
 
-      {/* ── Statistiques rapides ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[
-          { label: 'Questions', value: '128', icon: '❓', color: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
-          { label: 'Réponses', value: '412', icon: '💬', color: 'bg-violet-50 border-violet-200 text-violet-700' },
-          { label: 'Membres', value: '56', icon: '👥', color: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
-          { label: 'Résolues', value: '89%', icon: '✅', color: 'bg-sky-50 border-sky-200 text-sky-700' },
-        ].map(({ label, value, icon, color }) => (
-          <div key={label} className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${color} bg-opacity-60`}>
-            <span className="text-xl">{icon}</span>
-            <div>
-              <p className="font-bold text-base leading-none">{value}</p>
-              <p className="text-xs opacity-70 mt-0.5">{label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+        {/* Liste */}
+        <div className="space-y-5 pb-10">
+          {questions.map((question) => (
+            <QuestionCard
+              key={question.id}
+              question={question}
+            />
+          ))}
+        </div>
 
-      {/* ── Liste des questions ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {questions.map((question) => (
-          <QuestionCard key={question.id} question={question} />
-        ))}
       </div>
-    </section>
-  )
-}
+    </div>
+  );
+};
 
-export default Questions
+export default Questions;
