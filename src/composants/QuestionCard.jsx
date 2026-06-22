@@ -1,68 +1,99 @@
-const QuestionCard = ({ question }) => {
-  const initials = question.auteur
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-  const tagColors = [
-    'bg-indigo-50 text-indigo-600 border-indigo-200',
-    'bg-violet-50 text-violet-600 border-violet-200',
-    'bg-emerald-50 text-emerald-600 border-emerald-200',
-    'bg-sky-50 text-sky-600 border-sky-200',
-  ]
-  const tagColor = tagColors[question.id % tagColors.length]
+const QuestionCard = ({ question, onDelete }) => {
+  const navigate = useNavigate();
+
+  const auteur = question.auteur;
+
+  const heure = question.createdAt
+    ? new Date(question.createdAt).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "--:--";
+
+  const date = question.createdAt
+    ? new Date(question.createdAt).toLocaleDateString()
+    : "";
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+
+    const confirmation = window.confirm(
+      "Voulez-vous vraiment supprimer cette question ?"
+    );
+
+    if (confirmation) {
+      onDelete(question._id);
+    }
+  };
 
   return (
-    <div className="group bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden">
-      {/* Accent bar gauche */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl bg-gradient-to-b from-indigo-400 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-      {/* Badge tag */}
-      <div className="flex items-start justify-between mb-3">
-        <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${tagColor}`}>
-          Question #{question.id}
-        </span>
-        <span className="text-xs text-slate-400 flex items-center gap-1">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          {question.heure}
-        </span>
-      </div>
-
+    <div
+      onClick={() => navigate(`/question/${question._id}`)}
+      className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300 cursor-pointer"
+    >
       {/* Titre */}
-      <h2 className="text-base font-semibold text-slate-800 leading-snug mb-2 group-hover:text-indigo-700 transition-colors duration-200 line-clamp-2">
+      <h2 className="text-lg md:text-xl font-semibold text-gray-800 hover:text-blue-600 transition">
         {question.titre}
       </h2>
 
       {/* Description */}
-      <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4">
+      <p className="text-gray-600 mt-2 line-clamp-2">
         {question.description}
       </p>
 
-      {/* Footer card */}
-      <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-        <div className="flex items-center gap-2">
-          {/* Avatar initiales */}
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-            {initials}
+      {/* Tags */}
+      <div className="mt-2 flex flex-wrap gap-2">
+        {question.tags?.map((tag, i) => (
+          <span
+            key={i}
+            className="bg-blue-100 text-blue-600 px-2 py-1 text-xs rounded"
+          >
+            #{tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-between items-center mt-4">
+
+        {/* Auteur */}
+        {auteur && (
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+              {auteur.charAt(0).toUpperCase()}
+            </div>
+
+            <span className="text-sm text-gray-700">
+              {auteur}
+            </span>
           </div>
-          <span className="text-sm text-slate-600 font-medium">{question.auteur}</span>
+        )}
+
+        {/* Actions + Infos */}
+        <div className="flex items-center gap-3">
+
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition"
+          >
+            🗑️ Supprimer
+          </button>
+
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span>👍 {question.votes || 0}</span>
+            <span>💬 {question.reponsesCount || 0}</span>
+            <span>{heure}</span>
+            <span>{date}</span>
+          </div>
+
         </div>
 
-        {/* Bouton lire */}
-        <button className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 group-hover:underline transition-colors">
-          Voir plus
-          <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default QuestionCard
+export default QuestionCard;

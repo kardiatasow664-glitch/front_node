@@ -1,123 +1,83 @@
-import React, { useState } from "react";
-import { HelpCircle, Send } from "lucide-react";
+import { useState } from "react";
+import axios from "axios";
 
-const QuestionForm = () => {
-  const [formData, setFormData] = useState({
-    titre: "",
-    categorie: "",
-    description: "",
-  });
+export default function QuestionForm() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState("");
+  const [auteur, setAuteur] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    try {
+      await axios.post("http://localhost:3000/api/question", {
+        titre: title,
+        description,
+        tags: tags.split(","), // ✅ tableau
+        auteur: auteur,
+      });
 
-    alert("Question envoyée avec succès !");
+      alert("Question ajoutée !");
 
-    setFormData({
-      titre: "",
-      categorie: "",
-      description: "",
-    });
+      setTitle("");
+      setDescription("");
+      setTags("");
+      setAuteur("");
+
+    } catch (error) {
+      console.error(error);
+      alert("Erreur lors de l'envoi ❌");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-3xl bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-white p-8 md:p-10">
+    <div className="flex justify-center mt-10">
+      <form 
+        onSubmit={handleSubmit} 
+        className="bg-white shadow-md rounded p-6 w-full max-w-xl"
+      >
+        <h2 className="text-xl font-bold mb-4">Poser une question</h2>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-4">
-            <HelpCircle size={40} className="text-white" />
-          </div>
+        {/* Auteur */}
+        <input
+          type="text"
+          placeholder="Ton nom"
+          className="border p-2 w-full mb-3 rounded"
+          value={auteur}
+          onChange={(e) => setAuteur(e.target.value)}
+        />
 
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Poser une Question
-          </h1>
+        {/* Titre */}
+        <input
+          type="text"
+          placeholder="Titre de la question"
+          className="border p-2 w-full mb-3 rounded"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
-          <p className="text-slate-500 mt-2">
-            Décrivez votre problème afin que la communauté puisse vous aider.
-          </p>
-        </div>
+        {/* Description */}
+        <textarea
+          placeholder="Décris ton problème..."
+          className="border p-2 w-full mb-3 rounded h-32"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Tags */}
+        <input
+          type="text"
+          placeholder="tags (ex: react,node)"
+          className="border p-2 w-full mb-4 rounded"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+        />
 
-          {/* Titre */}
-          <div>
-            <label className="block text-slate-700 font-semibold mb-2">
-              Titre de la question
-            </label>
-
-            <input
-              type="text"
-              name="titre"
-              value={formData.titre}
-              onChange={handleChange}
-              placeholder="Ex : Comment utiliser React Router ?"
-              className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-              required
-            />
-          </div>
-
-          {/* Catégorie */}
-          <div>
-            <label className="block text-slate-700 font-semibold mb-2">
-              Catégorie
-            </label>
-
-            <select
-              name="categorie"
-              value={formData.categorie}
-              onChange={handleChange}
-              className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-              required
-            >
-              <option value="">Choisir une catégorie</option>
-              <option value="React">React</option>
-              <option value="JavaScript">JavaScript</option>
-              <option value="NodeJS">NodeJS</option>
-              <option value="MongoDB">MongoDB</option>
-              <option value="Autre">Autre</option>
-            </select>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-slate-700 font-semibold mb-2">
-              Description détaillée
-            </label>
-
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows="7"
-              placeholder="Décrivez votre problème ou votre question..."
-              className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none resize-none transition-all"
-              required
-            />
-          </div>
-
-          {/* Bouton */}
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
-          >
-            <Send size={20} />
-            Envoyer la question
-          </button>
-        </form>
-      </div>
+        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full">
+          Publier
+        </button>
+      </form>
     </div>
   );
-};
-
-export default QuestionForm;
+}

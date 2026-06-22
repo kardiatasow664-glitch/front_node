@@ -1,102 +1,126 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
+import axios from "axios";
 
 const Questions = () => {
-  const questions = [
-    {
-      id: 1,
-      titre: "Comment utiliser useEffect dans React ?",
-      description: "Je débute avec React et je souhaite récupérer des données.",
-      heure: "09:15",
-      auteur: "Aminata Ndiaye",
-      categorie: "React",
-    },
-    {
-      id: 2,
-      titre: "Pourquoi mon serveur Express retourne une erreur 404 ?",
-      description: "J'ai créé une route GET /users.",
-      heure: "10:30",
-      auteur: "Mamadou Diallo",
-      categorie: "Node.js",
-    },
-    {
-      id: 3,
-      titre: "Comment connecter Spring Boot à MySQL ?",
-      description: "Mon application ne se connecte pas.",
-      heure: "11:45",
-      auteur: "Fatou Sow",
-      categorie: "Java",
-    },
-  ];
+  const [questions, setQuestions] = useState([]);
+  const [selectedTag, setSelectedTag] = useState("all");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:3000/api/question"
+        );
+
+        setQuestions(res.data.questions || []);
+      } catch (error) {
+        console.error("Erreur récupération questions :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
+
+  const handleDeleteQuestion = async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:3000/api/question/${id}`
+      );
+
+      setQuestions((prev) =>
+        prev.filter((question) => question._id !== id)
+      );
+    } catch (error) {
+      console.error("Erreur suppression :", error);
+      alert("Erreur lors de la suppression");
+    }
+  };
+
+  const filteredQuestions =
+    selectedTag === "all"
+      ? questions
+      : questions.filter(
+          (q) =>
+            q.tags &&
+            q.tags.some(
+              (tag) =>
+                tag.toLowerCase() === selectedTag.toLowerCase()
+            )
+        );
+
+  if (loading) {
+    return (
+      <div className="text-center mt-10">
+        Chargement des questions...
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10">
+      <div className="max-w-5xl mx-auto px-4">
 
-      {/* Header */}
-      <div className="py-12">
-        <div className="max-w-6xl mx-auto px-6 text-center">
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-800">
+              💬 Questions
+            </h1>
 
-          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-            Forum de Questions
-          </h1>
-
-          <p className="mt-4 text-lg text-gray-600">
-            Partagez vos connaissances et trouvez des réponses à vos problèmes.
-          </p>
-
+            <p className="text-gray-600 mt-1">
+              {filteredQuestions.length} questions disponibles
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Catégories */}
-      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex gap-2 mb-5 flex-wrap">
+          <button
+            onClick={() => setSelectedTag("all")}
+            className="px-3 py-1 bg-gray-200 rounded"
+          >
+            Tous
+          </button>
 
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-
-          <span className="px-5 py-2 bg-indigo-600 text-white rounded-full shadow">
-            Toutes
-          </span>
-
-          <span className="px-5 py-2 bg-blue-100 text-blue-700 rounded-full">
+          <button
+            onClick={() => setSelectedTag("React")}
+            className="px-3 py-1 bg-blue-200 rounded"
+          >
             React
-          </span>
+          </button>
 
-          <span className="px-5 py-2 bg-green-100 text-green-700 rounded-full">
-            Node.js
-          </span>
+          <button
+            onClick={() => setSelectedTag("Node")}
+            className="px-3 py-1 bg-green-200 rounded"
+          >
+            Node
+          </button>
 
-          <span className="px-5 py-2 bg-orange-100 text-orange-700 rounded-full">
-            Java
-          </span>
-
-          <span className="px-5 py-2 bg-yellow-100 text-yellow-700 rounded-full">
-            JavaScript
-          </span>
-
+          <button
+            onClick={() => setSelectedTag("MongoDB")}
+            className="px-3 py-1 bg-yellow-200 rounded"
+          >
+            MongoDB
+          </button>
         </div>
 
-        {/* Informations */}
-        <div className="flex justify-between items-center mb-6">
-          <p className="font-medium text-indigo-700">
-            📚 {questions.length} questions disponibles
-          </p>
-
-          <select className="border border-indigo-200 rounded-xl px-4 py-2 bg-white">
-            <option>Plus récentes</option>
-            <option>Plus populaires</option>
-            <option>Sans réponse</option>
-          </select>
+        <div className="grid gap-6">
+          {filteredQuestions.length > 0 ? (
+            filteredQuestions.map((question) => (
+              <QuestionCard
+                key={question._id}
+                question={question}
+                onDelete={handleDeleteQuestion}
+              />
+            ))
+          ) : (
+            <div className="text-center text-gray-500">
+              Aucune question trouvée.
+            </div>
+          )}
         </div>
-
-        {/* Liste */}
-        <div className="space-y-5 pb-10">
-          {questions.map((question) => (
-            <QuestionCard
-              key={question.id}
-              question={question}
-            />
-          ))}
-        </div>
-
       </div>
     </div>
   );
