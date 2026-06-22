@@ -39,14 +39,7 @@ export default function QuestionForm() {
       >
         <h2 className="text-xl font-bold mb-4">Poser une question</h2>
 
-        {/* Auteur */}
-        <input
-          type="text"
-          placeholder="Ton nom"
-          className="border p-2 w-full mb-3 rounded"
-          value={auteur}
-          onChange={(e) => setAuteur(e.target.value)}
-        />
+       
 
         {/* Titre */}
         <input
