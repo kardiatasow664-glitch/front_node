@@ -82,12 +82,7 @@ const QuestionCard = ({ question, onDelete }) => {
             🗑️ Supprimer
           </button>
 
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span>👍 {question.votes || 0}</span>
-            <span>💬 {question.reponsesCount || 0}</span>
-            <span>{heure}</span>
-            <span>{date}</span>
-          </div>
+          
 
         </div>
 
