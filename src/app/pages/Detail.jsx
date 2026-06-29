@@ -6,10 +6,10 @@ const Detail = () => {
   const { id } = useParams();
 
   const [question, setQuestion] = useState(null);
-  const [answers, setAnswers] = useState([]); // Track list of answers
+  const [answers, setAnswers] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [reponse, setReponse] = useState("");
-  const [submitting, setSubmitting] = useState(false); // UI state for button loading
+  const [submitting, setSubmitting] = useState(false); 
 
   useEffect(() => {
     const fetchQuestionData = async () => {
@@ -19,8 +19,8 @@ const Detail = () => {
         );
         
         setQuestion(res.data.question);
-        // Safely set answers if your API populates/returns them with the question
-        setAnswers(res.data.question.reponses || []); 
+        // Récupération sécurisée des réponses si elles sont liées à l'objet question
+        setAnswers(res.data.question?.reponses || []); 
       } catch (error) {
         console.error("Erreur récupération question :", error);
       } finally {
@@ -43,20 +43,23 @@ const Detail = () => {
         { contenu: reponse }
       );
 
-      // Optimistic update: append the new answer directly to state 
-      // Adjust 'res.data.answer' depending on what your backend returns
-      const newAnswer = res.data.answer || { 
-        id: Date.now(), // Fallback key
+      // Adaptation flexible selon ce que renvoie votre backend :
+      // 1. res.data.answer ou 2. res.data directement, sinon un objet fallback structuré
+      const newAnswer = res.data?.answer || (res.data?.contenu ? res.data : { 
+        id: Date.now(), 
         contenu: reponse, 
         createdAt: new Date().toISOString() 
-      };
+      });
 
+      // Ajout instantané de la nouvelle réponse à l'écran
       setAnswers((prevAnswers) => [...prevAnswers, newAnswer]);
-      setReponse("");
+      setReponse(""); // Vide le textarea
     } catch (error) {
       console.error("Erreur ajout réponse :", error);
-      alert("Erreur lors de l'ajout de la réponse");
+      const errorMsg = error.response?.data?.message || "Erreur lors de l'ajout de la réponse";
+      alert(errorMsg);
     } finally {
+      // S'exécute quoi qu'il arrive (succès ou échec) pour débloquer le bouton
       setSubmitting(false);
     }
   };
@@ -79,7 +82,7 @@ const Detail = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      {/* Main Question Card */}
+      {/* Carte principale de la Question */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <h1 className="text-3xl font-bold text-gray-800">
           {question.titre}
@@ -114,7 +117,7 @@ const Detail = () => {
         </div>
       </div>
 
-      {/* Answers Section */}
+      {/* Section des Réponses existantes */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           Réponses ({answers.length})
@@ -127,7 +130,7 @@ const Detail = () => {
         ) : (
           <div className="space-y-4">
             {answers.map((ans) => (
-              <div key={ans.id || ans._id} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+              <div key={ans.id || ans._id || Math.random()} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
                 <p className="text-gray-700 whitespace-pre-line">{ans.contenu}</p>
                 {ans.createdAt && (
                   <div className="text-xs text-gray-400 mt-3">
@@ -140,7 +143,7 @@ const Detail = () => {
         )}
       </div>
 
-      {/* Answer Submission Form */}
+      {/* Formulaire d'ajout de réponse */}
       <div className="bg-white rounded-xl shadow-md p-6 mt-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           Ajouter une réponse
