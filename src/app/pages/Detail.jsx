@@ -6,10 +6,15 @@ const Detail = () => {
   const { id } = useParams();
 
   const [question, setQuestion] = useState(null);
-  const [answers, setAnswers] = useState([]); 
+  const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reponse, setReponse] = useState("");
-  const [submitting, setSubmitting] = useState(false); 
+  const [submitting, setSubmitting] = useState(false);
+
+  // --- Commentaires liés à la question ---
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
     const fetchQuestionData = async () => {
@@ -17,10 +22,10 @@ const Detail = () => {
         const res = await axios.get(
           `http://localhost:3000/api/question/${id}`
         );
-        
+
         setQuestion(res.data.question);
-        // Récupération sécurisée des réponses si elles sont liées à l'objet question
-        setAnswers(res.data.question?.reponses || []); 
+        setAnswers(res.data.question?.reponses || []);
+        setComments(res.data.question?.commentaires || []);
       } catch (error) {
         console.error("Erreur récupération question :", error);
       } finally {
@@ -43,24 +48,49 @@ const Detail = () => {
         { contenu: reponse }
       );
 
-      // Adaptation flexible selon ce que renvoie votre backend :
-      // 1. res.data.answer ou 2. res.data directement, sinon un objet fallback structuré
-      const newAnswer = res.data?.answer || (res.data?.contenu ? res.data : { 
-        id: Date.now(), 
-        contenu: reponse, 
-        createdAt: new Date().toISOString() 
+      const newAnswer = res.data?.answer || (res.data?.contenu ? res.data : {
+        id: Date.now(),
+        contenu: reponse,
+        createdAt: new Date().toISOString(),
       });
 
-      // Ajout instantané de la nouvelle réponse à l'écran
       setAnswers((prevAnswers) => [...prevAnswers, newAnswer]);
-      setReponse(""); // Vide le textarea
+      setReponse("");
     } catch (error) {
       console.error("Erreur ajout réponse :", error);
       const errorMsg = error.response?.data?.message || "Erreur lors de l'ajout de la réponse";
       alert(errorMsg);
     } finally {
-      // S'exécute quoi qu'il arrive (succès ou échec) pour débloquer le bouton
       setSubmitting(false);
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!commentText.trim()) return;
+
+    setSubmittingComment(true);
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/api/comment/${id}`,
+        { contenu: commentText }
+      );
+
+      const newComment = res.data?.comment || (res.data?.contenu ? res.data : {
+        id: Date.now(),
+        contenu: commentText,
+        createdAt: new Date().toISOString(),
+      });
+
+      setComments((prevComments) => [...prevComments, newComment]);
+      setCommentText("");
+    } catch (error) {
+      console.error("Erreur ajout commentaire :", error);
+      const errorMsg = error.response?.data?.message || "Erreur lors de l'ajout du commentaire";
+      alert(errorMsg);
+    } finally {
+      setSubmittingComment(false);
     }
   };
 
@@ -117,12 +147,65 @@ const Detail = () => {
         </div>
       </div>
 
+      {/* Section Commentaires (liés à la question) */}
+      <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          💬 Commentaires ({comments.length})
+        </h2>
+
+        {comments.length === 0 ? (
+          <p className="text-gray-500 italic text-sm mb-4">
+            Aucun commentaire pour le moment.
+          </p>
+        ) : (
+          <div className="space-y-3 mb-4">
+            {comments.map((com) => (
+              <div
+                key={com.id || com._id || Math.random()}
+                className="bg-gray-50 rounded-lg px-4 py-2"
+              >
+                <p className="text-sm text-gray-700 whitespace-pre-line">
+                  {com.contenu}
+                </p>
+                {com.createdAt && (
+                  <div className="text-[11px] text-gray-400 mt-1">
+                    {new Date(com.createdAt).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <form onSubmit={handleCommentSubmit} className="flex items-center gap-2">
+          <input
+            type="text"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Ajouter un commentaire..."
+            className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            disabled={submittingComment}
+          />
+          <button
+            type="submit"
+            disabled={submittingComment || !commentText.trim()}
+            className={`text-white text-sm px-4 py-2 rounded-lg transition-colors ${
+              submittingComment || !commentText.trim()
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {submittingComment ? "..." : "Envoyer"}
+          </button>
+        </form>
+      </div>
+
       {/* Section des Réponses existantes */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           Réponses ({answers.length})
         </h2>
-        
+
         {answers.length === 0 ? (
           <p className="text-gray-500 italic bg-gray-50 p-4 rounded-xl border border-dashed">
             Aucune réponse pour le moment. Soyez le premier à répondre !
@@ -130,7 +213,10 @@ const Detail = () => {
         ) : (
           <div className="space-y-4">
             {answers.map((ans) => (
-              <div key={ans.id || ans._id || Math.random()} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+              <div
+                key={ans.id || ans._id || Math.random()}
+                className="bg-white rounded-xl shadow-sm p-5 border border-gray-100"
+              >
                 <p className="text-gray-700 whitespace-pre-line">{ans.contenu}</p>
                 {ans.createdAt && (
                   <div className="text-xs text-gray-400 mt-3">
