@@ -38,6 +38,9 @@ const QuestionCard = ({ question, onDelete }) => {
       <h2 className="text-lg md:text-xl font-semibold text-gray-800 hover:text-blue-600 transition">
         {question.titre}
       </h2>
+      <div className="text-xs text-gray-500 mt-1">
+         Ajoutée par {auteur || "coumba"} le {date} à {heure}
+      </div>
 
       {/* Description */}
       <p className="text-gray-600 mt-2 line-clamp-2">
