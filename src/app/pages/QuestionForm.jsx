@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const URL_FRONT = import.meta.env.VITE_URL_FRONT;
 
 export default function QuestionForm() {
@@ -8,6 +9,7 @@ export default function QuestionForm() {
   const [tags, setTags] = useState("");
   const [auteur, setAuteur] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +29,8 @@ export default function QuestionForm() {
       setDescription("");
       setAuteur("");
       setTags("");
+      navigate('/');
+
     
     } catch (error) {
       console.log(error);
