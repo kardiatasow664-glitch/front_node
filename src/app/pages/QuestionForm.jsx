@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+const URL_FRONT = import.meta.env.VITE_URL_FRONT;
 
 export default function QuestionForm() {
   const [title, setTitle] = useState("");
@@ -13,20 +14,22 @@ export default function QuestionForm() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/api/question", {
+      await axios.post(`${URL_FRONT}/api/question`, {
         titre: title,
         description,
+        auteur,
         tags: tags.split(",").map(tag => tag.trim()),
-        auteur: auteur,
+        
       });
 
       alert("Question ajoutée ! 🎉");
       setTitle("");
       setDescription("");
-      setTags("");
       setAuteur("");
+      setTags("");
+    
     } catch (error) {
-      console.error(error);
+      console.log(error);
       alert("Erreur lors de l'envoi ❌");
     } finally {
       setLoading(false);
